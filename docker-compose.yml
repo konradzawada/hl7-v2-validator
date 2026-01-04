@@ -1,36 +1,47 @@
 services:
   bl:
-    image: innovarhealthcare/bridgelink:4.5.4
+    image: innovarhealthcare/bridgelink:4.6.0
     stdin_open: true
     tty: true
     user: 1000:1000
     ports:
       - "8443:8443"
+      - "6666:6666"
+      - "80:80"
     volumes:
-      - ./appdata:/opt/bridgelink/appdata
+      - bridgelink_appdata:/opt/bridgelink/appdata
     secrets:
-      - blserver_vmoptions
+      - mirth_properties
     environment:
       MP_DATABASE: postgres
       MP_DATABASE_URL: jdbc:postgresql://postgres:5432/bridgelinkdb
-      MP_DATABASE_USERNAME: bridgelinktest
-      MP_DATABASE_PASSWORD: bridgelinktest
       SERVER_ID: 7d760af2-680a-4a19-b9a2-c4685df61ebc
-      MP_KEYSTORE_KEYPASS: bridgelinkKeystore
-      MP_KEYSTORE_STOREPASS: bridgelinkKeypass
       MP_CONFIGURATIONMAP_LOCATION: database
     depends_on:
       - postgres
 
   postgres:
-    image: postgres:14-alpine
+    image: postgres:16-alpine
     ports:
       - 5432:5432
+    secrets:
+      - postgres_user
+      - postgres_password
     environment:
-      POSTGRES_PASSWORD: bridgelinktest
-      POSTGRES_USER: bridgelinktest
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      POSTGRES_USER_FILE: /run/secrets/postgres_user
       POSTGRES_DB: bridgelinkdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
 secrets:
-  blserver_vmoptions:
-    file: appdata/custom_blserver.vmoptions
+  mirth_properties:
+    file: secrets/mirth.properties
+  postgres_user:
+    file: secrets/postgres_user.txt
+  postgres_password:
+    file: secrets/postgres_password.txt
+
+volumes:
+  postgres_data:
+  bridgelink_appdata:
