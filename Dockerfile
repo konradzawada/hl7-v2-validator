@@ -28,6 +28,7 @@ RUN useradd -u 1000 bridgelink
 
 # Copy in the necessary scripts and ensure they are executable
 COPY scripts/install.sh /opt/scripts/install.sh
+COPY scripts/config/Projectathon_HL7_LAB_Gateway.xml /opt/scripts/config/Projectathon_HL7_LAB_Gateway.xml
 COPY scripts/entrypoint.sh /opt/scripts/entrypoint.sh
 RUN chmod +x /opt/scripts/install.sh /opt/scripts/entrypoint.sh
 
@@ -72,16 +73,18 @@ RUN useradd -u 1000 bridgelink
 
 # Copy the built application and entrypoint script from the builder stage
 COPY --from=builder /opt/bridgelink /opt/bridgelink
+COPY --from=builder /opt/scripts/config/Projectathon_HL7_LAB_Gateway.xml /opt/scripts/config/Projectathon_HL7_LAB_Gateway.xml
 COPY --from=builder /opt/scripts/entrypoint.sh /opt/scripts/entrypoint.sh
 
 # Ensure proper permissions for the entrypoint and application files
 RUN chmod 755 /opt/scripts/entrypoint.sh && \
+    chmod 755 /opt/scripts/config/Projectathon_HL7_LAB_Gateway.xml && \
     chown -R bridgelink:bridgelink /opt/bridgelink
 
 WORKDIR /opt/bridgelink
 
 # Expose the required port and define volumes for persistent data
-EXPOSE 8443
+EXPOSE 8443 6666 80
 VOLUME /opt/bridgelink/appdata
 VOLUME /opt/bridgelink/custom-extensions
 

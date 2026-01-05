@@ -1,6 +1,7 @@
 services:
   bl:
-    image: innovarhealthcare/bridgelink:4.6.0
+    #image: innovarhealthcare/bridgelink:4.6.0
+    image: hl7-v2-validator:latest
     stdin_open: true
     tty: true
     user: 1000:1000
@@ -12,11 +13,13 @@ services:
       - bridgelink_appdata:/opt/bridgelink/appdata
     secrets:
       - mirth_properties
+      - admin_password
     environment:
       MP_DATABASE: postgres
       MP_DATABASE_URL: jdbc:postgresql://postgres:5432/bridgelinkdb
       SERVER_ID: 7d760af2-680a-4a19-b9a2-c4685df61ebc
       MP_CONFIGURATIONMAP_LOCATION: database
+      ADMIN_PASSWORD_FILE: /run/secrets/admin_password
     depends_on:
       - postgres
 
@@ -37,6 +40,8 @@ services:
 secrets:
   mirth_properties:
     file: secrets/mirth.properties
+  admin_password:
+    file: secrets/admin_password.txt
   postgres_user:
     file: secrets/postgres_user.txt
   postgres_password:
