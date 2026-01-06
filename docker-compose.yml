@@ -1,6 +1,5 @@
 services:
   bl:
-    #image: innovarhealthcare/bridgelink:4.6.0
     image: hl7-v2-validator:latest
     stdin_open: true
     tty: true
