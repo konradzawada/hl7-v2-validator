@@ -260,12 +260,30 @@ if [ ${#zip_files[@]} -gt 0 ]; then
 fi
 
 # First start: set custom config
+# ADMIN_PASSWORD
 if [[ -n "$ADMIN_PASSWORD_FILE" && -f "$ADMIN_PASSWORD_FILE" ]]; then
-  ADMIN_PASSWORD=$(cat "$ADMIN_PASSWORD_FILE" | tr -d '\r\n')
+  ADMIN_PASSWORD=$(tr -d '\r\n' < "$ADMIN_PASSWORD_FILE")
 else
   echo "ADMIN_PASSWORD_FILE not set or missing"
   exit 1
 fi
+
+# FHIR_CLIENT_ID
+if [[ -n "$FHIR_CLIENT_ID_FILE" && -f "$FHIR_CLIENT_ID_FILE" ]]; then
+  FHIR_CLIENT_ID=$(tr -d '\r\n' < "$FHIR_CLIENT_ID_FILE")
+else
+  echo "FHIR_CLIENT_ID_FILE not set or missing"
+  exit 1
+fi
+
+# FHIR_CLIENT_SECRET
+if [[ -n "$FHIR_CLIENT_SECRET_FILE" && -f "$FHIR_CLIENT_SECRET_FILE" ]]; then
+  FHIR_CLIENT_SECRET=$(tr -d '\r\n' < "$FHIR_CLIENT_SECRET_FILE")
+else
+  echo "FHIR_CLIENT_SECRET_FILE not set or missing"
+  exit 1
+fi
+
 
 if [ ! -f "$MARKER" ]; then
   echo "First start detected – setting custom configurations"
@@ -289,6 +307,12 @@ if [ ! -f "$MARKER" ]; then
 
   echo "Admin password set"
 
+  # Write FHIR configuration into the config file
+  sed -i "s|\${FHIR_CLIENT_ID}|$FHIR_CLIENT_ID|g" $CONFIG_FILE
+  sed -i "s|\${FHIR_CLIENT_SECRET}|$FHIR_CLIENT_SECRET|g" $CONFIG_FILE
+  sed -i "s|\${FHIR_AUTH_URL}|$FHIR_AUTH_URL|g" $CONFIG_FILE
+  sed -i "s|\${FHIR_LOINC_TERM_URL}|$FHIR_LOINC_TERM_URL|g" $CONFIG_FILE
+  
   # Restore configuration from file
   echo "Restoring configuration..."
 
