@@ -9,6 +9,9 @@ EXTENSIONS_DIR="/opt/bridgelink/extensions"
 CUSTOM_JARS_DIR="/opt/bridgelink/custom-jars"
 S3_CUSTOM_JARS_DIR="/opt/bridgelink/S3_custom-jars"
 APPDATA_DIR="/opt/bridgelink/appdata"
+MARKER="/opt/bridgelink/appdata/.config_restored"
+API_URL="https://localhost:8443"
+CONFIG_FILE="/opt/scripts/config/Projectathon_HL7_LAB_Gateway.xml"
 
 # Function to update a property in the file
 update_property() {
@@ -255,6 +258,81 @@ if [ ${#zip_files[@]} -gt 0 ]; then
     (cd "$EXTENSIONS_DIR" && jar xf "$zip_file")
   done
 fi
+
+# First start: set custom config
+# ADMIN_PASSWORD
+if [[ -n "$ADMIN_PASSWORD_FILE" && -f "$ADMIN_PASSWORD_FILE" ]]; then
+  ADMIN_PASSWORD=$(tr -d '\r\n' < "$ADMIN_PASSWORD_FILE")
+else
+  echo "ADMIN_PASSWORD_FILE not set or missing"
+  exit 1
+fi
+
+# FHIR_CLIENT_ID
+if [[ -n "$FHIR_CLIENT_ID_FILE" && -f "$FHIR_CLIENT_ID_FILE" ]]; then
+  FHIR_CLIENT_ID=$(tr -d '\r\n' < "$FHIR_CLIENT_ID_FILE")
+else
+  echo "FHIR_CLIENT_ID_FILE not set or missing"
+  exit 1
+fi
+
+# FHIR_CLIENT_SECRET
+if [[ -n "$FHIR_CLIENT_SECRET_FILE" && -f "$FHIR_CLIENT_SECRET_FILE" ]]; then
+  FHIR_CLIENT_SECRET=$(tr -d '\r\n' < "$FHIR_CLIENT_SECRET_FILE")
+else
+  echo "FHIR_CLIENT_SECRET_FILE not set or missing"
+  exit 1
+fi
+
+
+if [ ! -f "$MARKER" ]; then
+  echo "First start detected – setting custom configurations"
+
+  ./blserver &
+  BL_PID=$!
+
+  echo "Waiting for BridgeLink to be fully STARTED..."
+  until curl -ks -u admin:admin "$API_URL/api/server/status" -H "X-Requested-With: OpenAPI" | grep -q "<int>0</int>"; do
+    sleep 5
+  done
+
+  # Set the admin password
+  echo "API ready – changing admin password"
+
+  curl -ks -u admin:admin -X PUT \
+    "$API_URL/api/users/1/password" \
+    -H "Content-Type: text/plain" \
+    -H "X-Requested-With: OpenAPI" \
+    -d "$ADMIN_PASSWORD"
+
+  echo "Admin password set"
+
+  # Write FHIR configuration into the config file
+  sed -i "s|\${FHIR_CLIENT_ID}|$FHIR_CLIENT_ID|g" $CONFIG_FILE
+  sed -i "s|\${FHIR_CLIENT_SECRET}|$FHIR_CLIENT_SECRET|g" $CONFIG_FILE
+  sed -i "s|\${FHIR_AUTH_URL}|$FHIR_AUTH_URL|g" $CONFIG_FILE
+  sed -i "s|\${FHIR_LOINC_TERM_URL}|$FHIR_LOINC_TERM_URL|g" $CONFIG_FILE
+  
+  # Restore configuration from file
+  echo "Restoring configuration..."
+
+  curl -ks -u admin:"$ADMIN_PASSWORD" -X PUT \
+    "$API_URL/api/server/configuration?deploy=true&overwriteConfigMap=true" \
+    -H "Content-Type: application/xml" \
+    -H "X-Requested-With: OpenAPI" \
+    --data-binary @"$CONFIG_FILE"
+
+  echo "Configuration restored"
+
+  touch "$MARKER"
+
+  echo "Stopping temporary server"
+  kill "$BL_PID"
+  wait "$BL_PID" 2>/dev/null || true
+
+  echo "Init finished – starting normally"
+fi
+
 
 cd /opt/bridgelink
 

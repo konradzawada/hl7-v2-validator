@@ -1,36 +1,64 @@
 services:
   bl:
-    image: innovarhealthcare/bridgelink:4.5.4
+    image: hl7-v2-validator:latest
     stdin_open: true
     tty: true
     user: 1000:1000
     ports:
       - "8443:8443"
+      - "6661:6661"
+      - "6662:6662"
+      - "8081:8081"
     volumes:
-      - ./appdata:/opt/bridgelink/appdata
+      - bridgelink_appdata:/opt/bridgelink/appdata
+      - bridgelink_filecache:/opt/bridgelink/file_cache
     secrets:
-      - blserver_vmoptions
+      - mirth_properties
+      - admin_password
+      - fhir_client_id
+      - fhir_client_secret
     environment:
       MP_DATABASE: postgres
       MP_DATABASE_URL: jdbc:postgresql://postgres:5432/bridgelinkdb
-      MP_DATABASE_USERNAME: bridgelinktest
-      MP_DATABASE_PASSWORD: bridgelinktest
       SERVER_ID: 7d760af2-680a-4a19-b9a2-c4685df61ebc
-      MP_KEYSTORE_KEYPASS: bridgelinkKeystore
-      MP_KEYSTORE_STOREPASS: bridgelinkKeypass
       MP_CONFIGURATIONMAP_LOCATION: database
+      ADMIN_PASSWORD_FILE: /run/secrets/admin_password
+      FHIR_CLIENT_ID_FILE: /run/secrets/fhir_client_id
+      FHIR_CLIENT_SECRET_FILE: /run/secrets/fhir_client_secret
+      FHIR_AUTH_URL: http://apps.tukan.online:8082/realms/ssidl/protocol/openid-connect/token
+      FHIR_LOINC_TERM_URL: http://apps.tukan.online:8091/fhir/CodeSystem/loinc-2.80.0
     depends_on:
       - postgres
 
   postgres:
-    image: postgres:14-alpine
+    image: postgres:16-alpine
     ports:
       - 5432:5432
+    secrets:
+      - postgres_user
+      - postgres_password
     environment:
-      POSTGRES_PASSWORD: bridgelinktest
-      POSTGRES_USER: bridgelinktest
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      POSTGRES_USER_FILE: /run/secrets/postgres_user
       POSTGRES_DB: bridgelinkdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
 secrets:
-  blserver_vmoptions:
-    file: appdata/custom_blserver.vmoptions
+  mirth_properties:
+    file: secrets/mirth.properties
+  admin_password:
+    file: secrets/admin_password.txt
+  postgres_user:
+    file: secrets/postgres_user.txt
+  postgres_password:
+    file: secrets/postgres_password.txt
+  fhir_client_id:
+    file: secrets/fhir_client_id.txt
+  fhir_client_secret:
+    file: secrets/fhir_client_secret.txt
+
+volumes:
+  postgres_data:
+  bridgelink_appdata:
+  bridgelink_filecache:
