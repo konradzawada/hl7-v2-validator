@@ -2,7 +2,7 @@
 
 **Walidator wiadomości HL7 v2 (oparty o BridgeLink / Mirth Connect)**
 
-Ten projekt powstał na potrzeby Projecthaton HL7 Polska i zawiera przygotowany obraz BridgeLink z niezbędnymi konfiguracjami i zasobami.
+Ten projekt powstał na potrzeby Projectathon HL7 Polska i zawiera przygotowany obraz BridgeLink z niezbędnymi konfiguracjami i zasobami.
 
 ---
 
