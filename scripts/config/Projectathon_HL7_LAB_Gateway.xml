@@ -1,12 +1,12 @@
 <serverConfiguration version="4.6.0">
-  <date>2026-01-07 22:04:54</date>
+  <date>2026-01-07 23:23:43</date>
   <channelGroups>
     <channelGroup version="4.6.0">
       <id>c2f63856-0806-475a-ae00-a8e6b1e8036a</id>
       <name>APIs</name>
       <revision>1</revision>
       <lastModified>
-        <time>1767735338748</time>
+        <time>1767821045646</time>
         <timezone>UTC</timezone>
       </lastModified>
       <description></description>
@@ -22,7 +22,7 @@
       <name>HL7 Gateways</name>
       <revision>1</revision>
       <lastModified>
-        <time>1767735338752</time>
+        <time>1767821045639</time>
         <timezone>UTC</timezone>
       </lastModified>
       <description></description>
@@ -42,7 +42,7 @@
       <name>Maintenance</name>
       <revision>1</revision>
       <lastModified>
-        <time>1767735338757</time>
+        <time>1767821045633</time>
         <timezone>UTC</timezone>
       </lastModified>
       <description></description>
@@ -913,7 +913,65 @@ if ($(&apos;MSH_MessageType&apos;) == &apos;ORM^O01&apos; || $(&apos;MSH_Message
 	    		err71: &apos;Missing required value in OBX-&apos; + (i +1) + &apos; (Value Type)&apos;,
 	    		err81: &apos;Brak wskazania typu zawartości&apos;
 			});
-		} else if ($(&apos;OBX_ValueMimeType_&apos; + i) == &apos;x-hl7-cda-level-one&apos; &amp;&amp; isNull($(&apos;OBX_Value_&apos; + i)) == false) {
+		} else if ($(&apos;MSH_MessageType&apos;) == &apos;ORU^R01&apos; &amp;&amp; ($(&apos;OBX_ValueType_&apos; + i) == &apos;ST&apos; || $(&apos;OBX_ValueType_&apos; + i) == &apos;NM&apos; || $(&apos;OBX_ValueType_&apos; + i) == &apos;CW&apos; || $(&apos;OBX_ValueType_&apos; + i) == &apos;CWE&apos;)) {
+					if(isNull($(&apos;OBX_ObservationID_&apos; + i))){
+						validationErrors.push({
+				    		err21: &apos;OBX&apos;,
+				    		err22: i +1,
+				    		err23: &apos;3&apos;,
+				    		err25: &apos;1&apos;,
+				    		err31: &apos;204&apos;,
+				    		err32: &apos;Unknown key identifier&apos;,
+				    		err33: &apos;HL70357&apos;,
+				    		err41: &apos;E&apos;,
+				    		err71: &apos;Missing required value in OBX-&apos; + (i +1) + &apos; (Observation Identifier)&apos;,
+				    		err81: &apos;Brak ID obserwacji&apos;
+						});
+					} else {
+						var fhir = isValidLoinc($(&apos;OBX_ObservationID_&apos; + i));
+						if (fhir.result == false) {
+							validationErrors.push({
+					    		err21: &apos;OBX&apos;,
+					    		err22: i +1,
+					    		err23: &apos;3&apos;,
+					    		err25: &apos;1&apos;,
+					    		err31: &apos;103&apos;,
+					    		err32: &apos;Table value not found&apos;,
+					    		err33: &apos;HL70357&apos;,
+					    		err41: &apos;E&apos;,
+					    		err71: &apos;Invalid LOINC code in OBX-&apos; + (i +1) + &apos;:&apos; + $(&apos;OBX_ObservationID_&apos; + i),
+					    		err81: &apos;Niepoprawny identyfikator pozycji LOINC&apos;
+							});
+						} else {
+							infoMessages.push({
+					    		err21: &apos;OBX&apos;,
+					    		err22: i +1,
+					    		err23: &apos;3&apos;,
+					    		err25: &apos;1&apos;,
+					    		err31: &apos;0&apos;,
+					    		err32: &apos;Message accepted&apos;,
+					    		err33: &apos;HL70357&apos;,
+					    		err41: &apos;I&apos;,
+					    		err71: &apos;LOINC display: &apos; + fhir.display,
+					    		err81: &apos;Informacja o kodzie LOINC&apos;
+							});
+						}
+					}
+			if(isNull($(&apos;OBX_ObservationID_&apos; + i)) || $(&apos;OBX_ObservationCodingSystem_&apos; + i) != &apos;LN&apos;){
+				validationErrors.push({
+		    		err21: &apos;OBX&apos;,
+		    		err22: i +1,
+		    		err23: &apos;3&apos;,
+		    		err25: &apos;3&apos;,
+		    		err31: &apos;101&apos;,
+		    		err32: &apos;Required field missing&apos;,
+		    		err33: &apos;HL70357&apos;,
+		    		err41: &apos;E&apos;,
+		    		err71: &apos;The coding system is missing or not equal to LOINC&apos;,
+		    		err81: &apos;Brak wskazania na system kodowania lub wskazano inny niż LOINC&apos;
+				});
+			}
+		} else if ($(&apos;OBX_ValueType_&apos; + i) == &apos;ED&apos; &amp;&amp; $(&apos;OBX_ValueMimeType_&apos; + i) == &apos;x-hl7-cda-level-one&apos; &amp;&amp; isNull($(&apos;OBX_Value_&apos; + i)) == false) {
 			CDAattachment = true;
 		}
 	}
@@ -1719,7 +1777,7 @@ return;</undeployScript>
         <metadata>
           <enabled>true</enabled>
           <lastModified>
-            <time>1767819801174</time>
+            <time>1767824396296</time>
             <timezone>Europe/Warsaw</timezone>
           </lastModified>
           <pruningSettings>
@@ -1741,7 +1799,7 @@ Walidacja ograniczona do komunikatów typu ORM^O01 oraz ORU^R01.&#xd;
 Przeznaczenie: walidacja komunikatów HL7 v2 w ramach testów słownika LOINC w Diagnostyce Laboratoryjnej.&#xd;
 &#xd;
 http://apps.tukan.online:8091/fhir/CodeSystem?url=http://loinc.org</description>
-      <revision>3</revision>
+      <revision>4</revision>
       <sourceConnector version="4.6.0">
         <metaDataId>0</metaDataId>
         <name>sourceConnector</name>
@@ -1845,6 +1903,7 @@ for (var i = 0; i &lt; obxCount; i++){
 	channelMap.put(&apos;OBX_ValueType_&apos; + i, msg[&apos;OBX&apos;][i][&apos;OBX.2&apos;][&apos;OBX.2.1&apos;].toString());
 	channelMap.put(&apos;OBX_ObservationID_&apos; + i, msg[&apos;OBX&apos;][i][&apos;OBX.3&apos;][&apos;OBX.3.1&apos;].toString());
 	channelMap.put(&apos;OBX_ObservationName_&apos; + i, msg[&apos;OBX&apos;][i][&apos;OBX.3&apos;][&apos;OBX.3.2&apos;].toString());
+	channelMap.put(&apos;OBX_ObservationCodingSystem_&apos; + i, msg[&apos;OBX&apos;][i][&apos;OBX.3&apos;][&apos;OBX.3.2&apos;].toString());
 	channelMap.put(&apos;OBX_ValueRepresentation_&apos; + i, msg[&apos;OBX&apos;][i][&apos;OBX.5&apos;][&apos;OBX.5.2&apos;].toString());
 	channelMap.put(&apos;OBX_ValueMimeType_&apos; + i, msg[&apos;OBX&apos;][i][&apos;OBX.5&apos;][&apos;OBX.5.3&apos;].toString());
 	channelMap.put(&apos;OBX_ValueEncoding_&apos; + i, msg[&apos;OBX&apos;][i][&apos;OBX.5&apos;][&apos;OBX.5.4&apos;].toString());
@@ -2061,7 +2120,65 @@ if ($(&apos;MSH_MessageType&apos;) == &apos;ORM^O01&apos; || $(&apos;MSH_Message
 	    		err71: &apos;Missing required value in OBX-&apos; + (i +1) + &apos; (Value Type)&apos;,
 	    		err81: &apos;Brak wskazania typu zawartości&apos;
 			});
-		} else if ($(&apos;OBX_ValueMimeType_&apos; + i) == &apos;x-hl7-cda-level-one&apos; &amp;&amp; isNull($(&apos;OBX_Value_&apos; + i)) == false) {
+		} else if ($(&apos;MSH_MessageType&apos;) == &apos;ORU^R01&apos; &amp;&amp; ($(&apos;OBX_ValueType_&apos; + i) == &apos;ST&apos; || $(&apos;OBX_ValueType_&apos; + i) == &apos;NM&apos; || $(&apos;OBX_ValueType_&apos; + i) == &apos;CW&apos; || $(&apos;OBX_ValueType_&apos; + i) == &apos;CWE&apos;)) {
+					if(isNull($(&apos;OBX_ObservationID_&apos; + i))){
+						validationErrors.push({
+				    		err21: &apos;OBX&apos;,
+				    		err22: i +1,
+				    		err23: &apos;3&apos;,
+				    		err25: &apos;1&apos;,
+				    		err31: &apos;204&apos;,
+				    		err32: &apos;Unknown key identifier&apos;,
+				    		err33: &apos;HL70357&apos;,
+				    		err41: &apos;E&apos;,
+				    		err71: &apos;Missing required value in OBX-&apos; + (i +1) + &apos; (Observation Identifier)&apos;,
+				    		err81: &apos;Brak ID obserwacji&apos;
+						});
+					} else {
+						var fhir = isValidLoinc($(&apos;OBX_ObservationID_&apos; + i));
+						if (fhir.result == false) {
+							validationErrors.push({
+					    		err21: &apos;OBX&apos;,
+					    		err22: i +1,
+					    		err23: &apos;3&apos;,
+					    		err25: &apos;1&apos;,
+					    		err31: &apos;103&apos;,
+					    		err32: &apos;Table value not found&apos;,
+					    		err33: &apos;HL70357&apos;,
+					    		err41: &apos;E&apos;,
+					    		err71: &apos;Invalid LOINC code in OBX-&apos; + (i +1) + &apos;:&apos; + $(&apos;OBX_ObservationID_&apos; + i),
+					    		err81: &apos;Niepoprawny identyfikator pozycji LOINC&apos;
+							});
+						} else {
+							infoMessages.push({
+					    		err21: &apos;OBX&apos;,
+					    		err22: i +1,
+					    		err23: &apos;3&apos;,
+					    		err25: &apos;1&apos;,
+					    		err31: &apos;0&apos;,
+					    		err32: &apos;Message accepted&apos;,
+					    		err33: &apos;HL70357&apos;,
+					    		err41: &apos;I&apos;,
+					    		err71: &apos;LOINC display: &apos; + fhir.display,
+					    		err81: &apos;Informacja o kodzie LOINC&apos;
+							});
+						}
+					}
+			if(isNull($(&apos;OBX_ObservationID_&apos; + i)) || $(&apos;OBX_ObservationCodingSystem_&apos; + i) != &apos;LN&apos;){
+				validationErrors.push({
+		    		err21: &apos;OBX&apos;,
+		    		err22: i +1,
+		    		err23: &apos;3&apos;,
+		    		err25: &apos;3&apos;,
+		    		err31: &apos;101&apos;,
+		    		err32: &apos;Required field missing&apos;,
+		    		err33: &apos;HL70357&apos;,
+		    		err41: &apos;E&apos;,
+		    		err71: &apos;The coding system is missing or not equal to LOINC&apos;,
+		    		err81: &apos;Brak wskazania na system kodowania lub wskazano inny niż LOINC&apos;
+				});
+			}
+		} else if ($(&apos;OBX_ValueType_&apos; + i) == &apos;ED&apos; &amp;&amp; $(&apos;OBX_ValueMimeType_&apos; + i) == &apos;x-hl7-cda-level-one&apos; &amp;&amp; isNull($(&apos;OBX_Value_&apos; + i)) == false) {
 			CDAattachment = true;
 		}
 	}
@@ -2867,7 +2984,7 @@ return;</undeployScript>
         <metadata>
           <enabled>true</enabled>
           <lastModified>
-            <time>1767819736959</time>
+            <time>1767824386626</time>
             <timezone>Europe/Warsaw</timezone>
           </lastModified>
           <pruningSettings>
@@ -2928,7 +3045,7 @@ return;</undeployScript>
       <name>FHIR</name>
       <revision>1</revision>
       <lastModified>
-        <time>1767735338890</time>
+        <time>1767821045760</time>
         <timezone>UTC</timezone>
       </lastModified>
       <description></description>
@@ -2944,7 +3061,7 @@ return;</undeployScript>
           <name>fetchNewFhirToken</name>
           <revision>1</revision>
           <lastModified>
-            <time>1767735338909</time>
+            <time>1767821045775</time>
             <timezone>UTC</timezone>
           </lastModified>
           <contextSet>
@@ -3011,7 +3128,7 @@ function fetchNewFhirToken() {
           <name>getFhirToken</name>
           <revision>1</revision>
           <lastModified>
-            <time>1767735338956</time>
+            <time>1767821045812</time>
             <timezone>UTC</timezone>
           </lastModified>
           <contextSet>
@@ -3059,7 +3176,7 @@ function getFhirToken() {
       <name>Shell operations</name>
       <revision>1</revision>
       <lastModified>
-        <time>1767735338893</time>
+        <time>1767821045763</time>
         <timezone>UTC</timezone>
       </lastModified>
       <description></description>
@@ -3078,7 +3195,7 @@ function getFhirToken() {
           <name>executeRuntimeCommand</name>
           <revision>1</revision>
           <lastModified>
-            <time>1767735338989</time>
+            <time>1767821045846</time>
             <timezone>UTC</timezone>
           </lastModified>
           <contextSet>
@@ -3145,7 +3262,7 @@ function StreamConsumer(is, charset) {
       <name>Validation functions</name>
       <revision>1</revision>
       <lastModified>
-        <time>1767735338899</time>
+        <time>1767821045767</time>
         <timezone>UTC</timezone>
       </lastModified>
       <description></description>
@@ -3163,7 +3280,7 @@ function StreamConsumer(is, charset) {
           <name>isNull</name>
           <revision>1</revision>
           <lastModified>
-            <time>1767735339022</time>
+            <time>1767821045880</time>
             <timezone>UTC</timezone>
           </lastModified>
           <contextSet>
@@ -3198,7 +3315,7 @@ function isNull(value) {
           <name>isValidBase64</name>
           <revision>1</revision>
           <lastModified>
-            <time>1767735339055</time>
+            <time>1767821045915</time>
             <timezone>UTC</timezone>
           </lastModified>
           <contextSet>
@@ -3234,7 +3351,7 @@ function isBase64(str) {
           <name>isValidLoinc</name>
           <revision>1</revision>
           <lastModified>
-            <time>1767735339089</time>
+            <time>1767821045943</time>
             <timezone>UTC</timezone>
           </lastModified>
           <contextSet>
