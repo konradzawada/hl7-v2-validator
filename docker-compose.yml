@@ -1,6 +1,6 @@
 services:
   bl:
-    image: hl7-v2-validator:latest
+    image: konradzawada/hl7-v2-validator:1.0.1
     stdin_open: true
     tty: true
     user: 1000:1000

@@ -1,12 +1,12 @@
 <serverConfiguration version="4.6.0">
-  <date>2026-01-06 18:06:28</date>
+  <date>2026-01-07 22:04:54</date>
   <channelGroups>
     <channelGroup version="4.6.0">
       <id>c2f63856-0806-475a-ae00-a8e6b1e8036a</id>
       <name>APIs</name>
       <revision>1</revision>
       <lastModified>
-        <time>1767718893117</time>
+        <time>1767735338748</time>
         <timezone>UTC</timezone>
       </lastModified>
       <description></description>
@@ -20,9 +20,9 @@
     <channelGroup version="4.6.0">
       <id>26c94b1d-a693-43ae-9534-18f96a3b0b1a</id>
       <name>HL7 Gateways</name>
-      <revision>2</revision>
+      <revision>1</revision>
       <lastModified>
-        <time>1767719162692</time>
+        <time>1767735338752</time>
         <timezone>UTC</timezone>
       </lastModified>
       <description></description>
@@ -42,7 +42,7 @@
       <name>Maintenance</name>
       <revision>1</revision>
       <lastModified>
-        <time>1767718893122</time>
+        <time>1767735338757</time>
         <timezone>UTC</timezone>
       </lastModified>
       <description></description>
@@ -593,7 +593,7 @@ Walidacja ograniczona do komunikatów typu ORM^O01 oraz ORU^R01.&#xd;
 Przeznaczenie: walidacja komunikatów HL7 v2 w ramach testów słownika LOINC w Diagnostyce Laboratoryjnej.&#xd;
 &#xd;
 http://apps.tukan.online:8091/fhir/CodeSystem?url=http://loinc.org</description>
-      <revision>3</revision>
+      <revision>2</revision>
       <sourceConnector version="4.6.0">
         <metaDataId>0</metaDataId>
         <name>sourceConnector</name>
@@ -913,51 +913,7 @@ if ($(&apos;MSH_MessageType&apos;) == &apos;ORM^O01&apos; || $(&apos;MSH_Message
 	    		err71: &apos;Missing required value in OBX-&apos; + (i +1) + &apos; (Value Type)&apos;,
 	    		err81: &apos;Brak wskazania typu zawartości&apos;
 			});
-		}
-		if(isNull($(&apos;OBX_ObservationID_&apos; + i))){
-			validationErrors.push({
-	    		err21: &apos;OBX&apos;,
-	    		err22: i +1,
-	    		err23: &apos;3&apos;,
-	    		err25: &apos;1&apos;,
-	    		err31: &apos;204&apos;,
-	    		err32: &apos;Unknown key identifier&apos;,
-	    		err33: &apos;HL70357&apos;,
-	    		err41: &apos;E&apos;,
-	    		err71: &apos;Missing required value in OBX-&apos; + (i +1) + &apos; (Observation Identifier)&apos;,
-	    		err81: &apos;Brak wskazania ID zawartości&apos;
-			});
-		}
-		if(isNull($(&apos;OBX_ObservationName_&apos; + i))){
-			validationErrors.push({
-	    		err21: &apos;OBX&apos;,
-	    		err22: i +1,
-	    		err23: &apos;3&apos;,
-	    		err25: &apos;2&apos;,
-	    		err31: &apos;101&apos;,
-	    		err32: &apos;Required field missing&apos;,
-	    		err33: &apos;HL70357&apos;,
-	    		err41: &apos;E&apos;,
-	    		err71: &apos;Missing required value in OBX-&apos; + (i +1) + &apos; (Observation Identifier Text)&apos;,
-	    		err81: &apos;Brak wskazania opisu zawartości&apos;
-			});
-		}
-		if(isNull($(&apos;OBX_Value_&apos; + i))){
-			validationErrors.push({
-	    		err21: &apos;OBX&apos;,
-	    		err22: i +1,
-	    		err23: &apos;5&apos;,
-	    		err25: &apos;5&apos;,
-	    		err31: &apos;101&apos;,
-	    		err32: &apos;Required field missing&apos;,
-	    		err33: &apos;HL70357&apos;,
-	    		err41: &apos;E&apos;,
-	    		err71: &apos;Missing required value in OBX-&apos; + (i +1) + &apos; (Observation Value)&apos;,
-	    		err81: &apos;Brak zawartości&apos;
-			});
-		}
-	
-		if($(&apos;OBX_ValueMimeType_&apos; + i) == &apos;x-hl7-cda-level-one&apos; &amp;&amp; isNull($(&apos;OBX_Value_&apos; + i)) == false) {
+		} else if ($(&apos;OBX_ValueMimeType_&apos; + i) == &apos;x-hl7-cda-level-one&apos; &amp;&amp; isNull($(&apos;OBX_Value_&apos; + i)) == false) {
 			CDAattachment = true;
 		}
 	}
@@ -1763,7 +1719,7 @@ return;</undeployScript>
         <metadata>
           <enabled>true</enabled>
           <lastModified>
-            <time>1767719142031</time>
+            <time>1767819801174</time>
             <timezone>Europe/Warsaw</timezone>
           </lastModified>
           <pruningSettings>
@@ -1785,7 +1741,7 @@ Walidacja ograniczona do komunikatów typu ORM^O01 oraz ORU^R01.&#xd;
 Przeznaczenie: walidacja komunikatów HL7 v2 w ramach testów słownika LOINC w Diagnostyce Laboratoryjnej.&#xd;
 &#xd;
 http://apps.tukan.online:8091/fhir/CodeSystem?url=http://loinc.org</description>
-      <revision>1</revision>
+      <revision>3</revision>
       <sourceConnector version="4.6.0">
         <metaDataId>0</metaDataId>
         <name>sourceConnector</name>
@@ -2105,51 +2061,7 @@ if ($(&apos;MSH_MessageType&apos;) == &apos;ORM^O01&apos; || $(&apos;MSH_Message
 	    		err71: &apos;Missing required value in OBX-&apos; + (i +1) + &apos; (Value Type)&apos;,
 	    		err81: &apos;Brak wskazania typu zawartości&apos;
 			});
-		}
-		if(isNull($(&apos;OBX_ObservationID_&apos; + i))){
-			validationErrors.push({
-	    		err21: &apos;OBX&apos;,
-	    		err22: i +1,
-	    		err23: &apos;3&apos;,
-	    		err25: &apos;1&apos;,
-	    		err31: &apos;204&apos;,
-	    		err32: &apos;Unknown key identifier&apos;,
-	    		err33: &apos;HL70357&apos;,
-	    		err41: &apos;E&apos;,
-	    		err71: &apos;Missing required value in OBX-&apos; + (i +1) + &apos; (Observation Identifier)&apos;,
-	    		err81: &apos;Brak wskazania ID zawartości&apos;
-			});
-		}
-		if(isNull($(&apos;OBX_ObservationName_&apos; + i))){
-			validationErrors.push({
-	    		err21: &apos;OBX&apos;,
-	    		err22: i +1,
-	    		err23: &apos;3&apos;,
-	    		err25: &apos;2&apos;,
-	    		err31: &apos;101&apos;,
-	    		err32: &apos;Required field missing&apos;,
-	    		err33: &apos;HL70357&apos;,
-	    		err41: &apos;E&apos;,
-	    		err71: &apos;Missing required value in OBX-&apos; + (i +1) + &apos; (Observation Identifier Text)&apos;,
-	    		err81: &apos;Brak wskazania opisu zawartości&apos;
-			});
-		}
-		if(isNull($(&apos;OBX_Value_&apos; + i))){
-			validationErrors.push({
-	    		err21: &apos;OBX&apos;,
-	    		err22: i +1,
-	    		err23: &apos;5&apos;,
-	    		err25: &apos;5&apos;,
-	    		err31: &apos;101&apos;,
-	    		err32: &apos;Required field missing&apos;,
-	    		err33: &apos;HL70357&apos;,
-	    		err41: &apos;E&apos;,
-	    		err71: &apos;Missing required value in OBX-&apos; + (i +1) + &apos; (Observation Value)&apos;,
-	    		err81: &apos;Brak zawartości&apos;
-			});
-		}
-	
-		if($(&apos;OBX_ValueMimeType_&apos; + i) == &apos;x-hl7-cda-level-one&apos; &amp;&amp; isNull($(&apos;OBX_Value_&apos; + i)) == false) {
+		} else if ($(&apos;OBX_ValueMimeType_&apos; + i) == &apos;x-hl7-cda-level-one&apos; &amp;&amp; isNull($(&apos;OBX_Value_&apos; + i)) == false) {
 			CDAattachment = true;
 		}
 	}
@@ -2955,7 +2867,7 @@ return;</undeployScript>
         <metadata>
           <enabled>true</enabled>
           <lastModified>
-            <time>1767718372991</time>
+            <time>1767819736959</time>
             <timezone>Europe/Warsaw</timezone>
           </lastModified>
           <pruningSettings>
@@ -3016,7 +2928,7 @@ return;</undeployScript>
       <name>FHIR</name>
       <revision>1</revision>
       <lastModified>
-        <time>1767718893191</time>
+        <time>1767735338890</time>
         <timezone>UTC</timezone>
       </lastModified>
       <description></description>
@@ -3032,7 +2944,7 @@ return;</undeployScript>
           <name>fetchNewFhirToken</name>
           <revision>1</revision>
           <lastModified>
-            <time>1767718893208</time>
+            <time>1767735338909</time>
             <timezone>UTC</timezone>
           </lastModified>
           <contextSet>
@@ -3099,7 +3011,7 @@ function fetchNewFhirToken() {
           <name>getFhirToken</name>
           <revision>1</revision>
           <lastModified>
-            <time>1767718893251</time>
+            <time>1767735338956</time>
             <timezone>UTC</timezone>
           </lastModified>
           <contextSet>
@@ -3147,7 +3059,7 @@ function getFhirToken() {
       <name>Shell operations</name>
       <revision>1</revision>
       <lastModified>
-        <time>1767718893195</time>
+        <time>1767735338893</time>
         <timezone>UTC</timezone>
       </lastModified>
       <description></description>
@@ -3166,7 +3078,7 @@ function getFhirToken() {
           <name>executeRuntimeCommand</name>
           <revision>1</revision>
           <lastModified>
-            <time>1767718893287</time>
+            <time>1767735338989</time>
             <timezone>UTC</timezone>
           </lastModified>
           <contextSet>
@@ -3233,7 +3145,7 @@ function StreamConsumer(is, charset) {
       <name>Validation functions</name>
       <revision>1</revision>
       <lastModified>
-        <time>1767718893199</time>
+        <time>1767735338899</time>
         <timezone>UTC</timezone>
       </lastModified>
       <description></description>
@@ -3251,7 +3163,7 @@ function StreamConsumer(is, charset) {
           <name>isNull</name>
           <revision>1</revision>
           <lastModified>
-            <time>1767718893318</time>
+            <time>1767735339022</time>
             <timezone>UTC</timezone>
           </lastModified>
           <contextSet>
@@ -3286,7 +3198,7 @@ function isNull(value) {
           <name>isValidBase64</name>
           <revision>1</revision>
           <lastModified>
-            <time>1767718893347</time>
+            <time>1767735339055</time>
             <timezone>UTC</timezone>
           </lastModified>
           <contextSet>
@@ -3322,7 +3234,7 @@ function isBase64(str) {
           <name>isValidLoinc</name>
           <revision>1</revision>
           <lastModified>
-            <time>1767718893374</time>
+            <time>1767735339089</time>
             <timezone>UTC</timezone>
           </lastModified>
           <contextSet>
